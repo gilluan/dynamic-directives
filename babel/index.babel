@@ -1,0 +1,402 @@
+angular.module('app', [])
+.component('cpForm', {
+  template:
+    `<div ng-form="$ctrl.formName" ng-class="$ctrl.type" novalidate>
+      <h3>Formulario Valido: {{$ctrl.formName.$valid}}</h3>
+      <div class="tab-content" ng-transclude></div>
+      <button value="ss" ng-if="$ctrl.formName.$valid">Teste</button>
+    </div>`,
+  transclude: true,
+  bindings: { 
+    name: '@', 
+    type: '@?', 
+    model: '<ngModel', 
+    options: '<', 
+    properties: '='
+  },
+  controller: function($scope) {
+    this.$onInit = function() {
+      this.formName = this.name || 'defaultForm';
+      this.type = this.type ? 'form-' + this.type : '';
+    }
+    
+    this.$postLink = function() {
+        if(!angular.isDefined(this.properties)) {
+          this.properties = {};
+        }
+            this.properties.form = this.formName
+    };
+
+    
+    // (function() {
+
+    // })();
+  }
+})
+//Componente feito somente para demonstração de outros componentes entre o form e o componente em ação
+.component('cpMeio', {
+  template:
+    `<div class="meio">
+      <div ng-transclude></div>
+    </div>`,
+  transclude: true,
+  bindings: {},
+  controller: function($scope) {}
+})
+
+
+//Diretiva responsável por colocar os atributos angular dinamicamente
+.directive('cpAtt', function($compile, $timeout) {
+    //método para ignorar os atributos que será removidos do HTML final 
+    function isIgnorarAtributo(key, toIgnore) {
+        return ['toIgnore'].concat(toIgnore).some(function(item) {
+           return  item === key;
+        });
+    }
+    
+    //Método que prepara os atributos que serão renderizados no HTML
+    //attrs: atributos do componente que serão manipulados
+    //obj: atributos do componente para manipulação
+    function prepararAtributos(attrs, obj) {
+      for (var key in obj.$attr) {
+        if(!isIgnorarAtributo(key, obj.toIgnore)) {
+          attrs.$set(obj.$attr[key].replace('cp', 'ng'), obj[key]);
+        }
+      }
+    }
+    return {
+      restrict: 'A',
+      terminal: true, // solution to duplicate items in select
+      priority: 1000, // solution to duplicate items in select
+      link: function(scope, element, attrs, ctrl) {
+        prepararAtributos(attrs, scope.$ctrl.attrs);
+        //Anula o cp-att para não entrar em loop
+        attrs.$set('cpAtt', null);
+        //Compilando o elemento a ser exibido no HTML final
+        $compile(element)(scope);
+      }
+  };
+})
+
+.component('cpCheckbox', {
+   bindings: {
+    ngModel: '=',
+    label: '@?',
+    name: '@?'
+  },
+  require: {
+      form: '^form',
+      cpForm: '^^cpForm'
+  },
+  template:
+  `
+    <input 
+      name="{{$ctrl.name}}" 
+      ng-model="$ctrl.ngModel" 
+      type="checkbox" 
+      cp-att="$ctrl.attrs"/>
+  `,
+  controller: function($scope, $element, $attrs) {
+     this.$onInit = function () {
+       this.attrs = $attrs;
+       this.attrs.toIgnore =  ['ngModel'];
+     };
+  }
+})
+
+.component('cpRadio', {
+   bindings: {
+    ngModel: '=',
+    label: '@?',
+    name: '@?'
+  },
+  require: {
+      form: '^form',
+      cpForm: '^^cpForm'
+  },
+  template:
+  `
+    <input 
+      name="{{$ctrl.name}}" 
+      ng-model="$ctrl.ngModel" 
+      type="radio" 
+      cp-att="$ctrl.attrs"/>
+  `,
+  controller: function($scope, $element, $attrs) {
+     this.$onInit = function () {
+       this.attrs = $attrs;
+       this.attrs.toIgnore =  ['ngModel'];
+     };
+  }
+})
+
+.component('cpEmail', {
+   bindings: {
+    ngModel: '=',
+    label: '@?',
+    name: '@?'
+  },
+  require: {
+      form: '^form',
+      cpForm: '^^cpForm'
+  },
+  template:
+  `
+    <input
+      name="{{$ctrl.name}}" 
+      ng-model="$ctrl.ngModel" 
+      type="email" 
+      cp-att="$ctrl.attrs"/>
+  `,
+  controller: function($scope, $element, $attrs) {
+     this.$onInit = function () {
+       this.attrs = $attrs;
+       this.attrs.toIgnore =  ['ngModel'];
+     };
+  }
+})
+.component('cpUrl', {
+   bindings: {
+    ngModel: '=',
+    label: '@?',
+    name: '@?'
+  },
+  require: {
+      form: '^form',
+      cpForm: '^^cpForm'
+  },
+  template:
+  `
+    <input 
+      name="{{$ctrl.name}}" 
+      ng-model="$ctrl.ngModel" 
+      type="url" 
+      cp-att="$ctrl.attrs"/>
+  `,
+  controller: function($scope, $element, $attrs) {
+     this.$onInit = function () {
+       this.attrs = $attrs;
+       this.attrs.toIgnore =  ['ngModel'];
+     };
+  }
+})
+
+.component('cpTime', {
+   bindings: {
+    ngModel: '=',
+    label: '@?',
+    name: '@?'
+  },
+  require: {
+      cpForm: '^^cpForm'
+  },
+  template:
+  `
+    <input 
+      name="{{$ctrl.name}}" 
+      ng-model="$ctrl.ngModel" 
+      type="time" 
+      cp-att="$ctrl.attrs"/>
+  `,
+  controller: function($scope, $element, $attrs) {
+     this.$onInit = function () {
+       this.attrs = $attrs;
+       this.attrs.toIgnore =  ['ngModel'];
+     };
+  }
+})
+
+.component('cpNumber', {
+   bindings: {
+    ngModel: '=',
+    label: '@?',
+    name: '@?'
+  },
+  require: {
+      form: '^form',
+      cpForm: '^^cpForm'
+  },
+  template:
+  `
+    <input 
+      name="{{$ctrl.name}}" 
+      ng-model="$ctrl.ngModel" 
+      type="number" 
+      cp-att="$ctrl.attrs"/>
+  `,
+  controller: function($scope, $element, $attrs) {
+     this.$onInit = function () {
+       this.attrs = $attrs;
+       this.attrs.toIgnore =  ['ngModel'];
+     };
+  }
+})
+.component('cpRange', {
+   bindings: {
+    ngModel: '=',
+    label: '@?',
+    name: '@?'
+  },
+  require: {
+      form: '^form',
+      cpForm: '^^cpForm'
+  },
+  template:
+  `
+    <input 
+      name="{{$ctrl.name}}" 
+      ng-model="$ctrl.ngModel" 
+      type="range"
+      cp-att="$ctrl.attrs"/>
+  `,
+  controller: function($scope, $element, $attrs) {
+     this.$onInit = function () {
+       this.attrs = $attrs;
+       this.attrs.toIgnore =  ['ngModel'];
+     };
+  }
+})
+.component('cpInputList', {
+   bindings: {
+    ngModel: '=',
+    label: '@?',
+    name: '@?'
+  },
+  require: {
+      form: '^form',
+      cpForm: '^^cpForm'
+  },
+  template:
+  `
+    <input 
+      name="{{$ctrl.name}}" 
+      ng-list
+      ng-model="$ctrl.ngModel" 
+      cp-att="$ctrl.attrs"/>
+  `,
+  controller: function($scope, $element, $attrs) {
+     this.$onInit = function () {
+       this.attrs = $attrs;
+       this.attrs.toIgnore =  ['ngModel', 'ngList'];
+     };
+  }
+})
+.component('cpInputText', {
+   bindings: {
+    ngModel: '=',
+    label: '@?',
+    name: '@?'
+  },
+  require: {
+      form: '^form',
+      cpForm: '^^cpForm'
+  },
+  template:
+  `
+    <input 
+      name="{{$ctrl.name}}" 
+      class="input" 
+      ng-model="$ctrl.ngModel" 
+      type="text" 
+      cp-att="$ctrl.attrs"/>
+  `,
+  controller: function($scope, $element, $attrs) {
+     this.$onInit = function () {
+       this.attrs = $attrs;
+       this.attrs.toIgnore =  ['ngModel'];
+     };
+  }
+})
+
+
+//Componente de select para abstração
+.component('cpSelect', {
+  restrict: 'E',
+  bindings: {
+    cpDefaultOptionText: '@?',
+    ngModel: '=',
+    label: '@?',
+    cpChange: '<?'
+  },
+  require: {
+      form: '^form',
+      cpForm: '^^cpForm'
+  },
+  template:
+  `
+  <select 
+    name="outro-select" 
+    ng-model="$ctrl.ngModel"
+    ng-change="$ctrl.change()"
+    cp-att="$ctrl.attrs">
+    <option value="" ng-if="$ctrl.showOptionText()">{{$ctrl.cpDefaultOptionText}}</option>
+  </select>
+`,
+  controller: function($scope, $element, $attrs) {
+    this.$onInit = function () {
+      //Importante colocar os atributos no escopoe
+      this.attrs =  $attrs;
+      //Importante adicionar os campos de ignore de cada atributo
+      this.attrs.toIgnore = ['ngModel', 'cpChange'];
+    };
+    //Responsavel por visualizar o select default do componente 
+    this.showOptionText = function() {
+      return angular.isDefined(this.cpDefaultOptionText);
+    };
+    
+    //Criado para atualizar a mudança do change na chamada para não mostrar o valor antigo
+    this.change = function() {
+      if(this.cpChange) {
+        this.cpChange(this.ngModel);  
+      }
+    };
+  }
+})
+.controller('Ctrl', function($scope) {
+  
+  //Contador referente ao teste de performance
+  (function() {
+    $scope.items = [];
+    for(var i = 0; i < 1000; i++) {
+      $scope.items.push(i);
+    }
+  })()
+  //Propriedades para controle do formulario, model, atributos e eventos
+  $scope.properties = {
+     availableOptions: [
+      {id: '1', name: 'Option A'},
+      {id: '2', name: 'Option B'}
+    ],
+    events: {
+      click: function (objAtualizado) {
+        console.log(objAtualizado || 'falta selecionar');
+      },
+      blur: function() {
+        alert('blur');
+      }
+    }
+  };
+  
+  
+  $scope.options = {
+    click: function (objAtualizado) {
+      console.log(objAtualizado || 'falta selecionar');
+    },
+    blur: function() {
+      alert('blur');
+    },
+     availableOptions: [
+      {id: '1', name: 'Option A'},
+      {id: '2', name: 'Option B'}
+    ]
+  };
+  $scope.model = {
+    //exemplo de model que já vem selecionado um valor
+    input: 'gilluanssss',
+    select: {id:"1",name:"Option A"},
+    color: {
+      name: 'red'
+    },
+    "check": "YES"
+  };
+});

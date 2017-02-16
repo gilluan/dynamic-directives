@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <title>select component and  form</title>
+  
+  
+  <link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css'>
+
+  
+  
+</head>
+
+<body>
+  <div ng-app="app">
+  <div ng-controller="Ctrl">
+      <cp-form name="formulario" type="vertical" properties="properties" ng-model="model" options="options">
+        {{properties.form.$valid}}
+            <!-- Exemplo para teste de performance com componentes-->
+            <!--div ng-repeat="i in items">
+              <cp-input-text placeholder="gilluan" cp-required="true" cp-minlength="3" ng-model="model.input">
+            </cp-input-text>
+            </div-->
+            <!-- Exemplo para teste de performance sem componentes-->
+            <!--div ng-repeat="i in items">
+              <input type="text" placeholder="gilluan" cp-required="true" cp-minlength="3" ng-model="model.input">
+            </input>
+            </div-->
+          <cp-meio>
+            Select: 
+            <cp-select 
+              name="select"
+              label="Bairro"
+              cp-default-option-text="Selecione um item"
+              cp-required="true"
+              cp-change="options.click"
+              cp-options="option.name for option in $ctrl.cpForm.properties.availableOptions track by option.id"
+              ng-model="model.select">
+             </cp-select>
+             <br />
+             Nome: 
+             <cp-input-text 
+               placeholder="gilluan" 
+               cp-blur="$ctrl.cpForm.options.blur()"
+               cp-required="true" 
+               cp-minlength="3" 
+               ng-model="model.input">
+            </cp-input-text>
+            <br />
+            Radios: 
+              <cp-radio 
+                cp-required="true"
+                ng-model="model.color.name" 
+                value="blue">
+              </cp-radio>
+              Blue
+              <cp-radio 
+                ng-required="true"
+                ng-model="model.color.name" 
+                value="red">
+              </cp-radio>
+              Red
+            <br />
+            Checkbox: 
+              <cp-checkbox 
+                type="checkbox" 
+                cp-required="true"
+                ng-model="model.check"
+                cp-true-value="'YES'" cp-false-value="'NO'">
+                </cp-checkbox>
+              <br />
+             Email: 
+                <cp-email 
+                  ng-model="model.email" 
+                  ng-required="true">
+                </cp-email>
+              <br />
+              Number: 
+              <cp-number 
+                max="5" 
+                min="2" 
+                ng-model="model.number">
+              </cp-number>
+             Time: 
+              <cp-time ng-model="model.time">
+              </cp-time>
+              <br />
+              Range: 
+              <cp-range name="timer"
+                ng-model="model.range">
+              </cp-range>
+              <br />
+              Input List: 
+              <cp-input-list 
+                ng-model="model.inputLista">
+              </cp-input-list>
+            <br />
+           Url: 
+              <cp-url 
+                ng-model="model.url">
+              </cp-url>
+           </cp-meio>
+         <pre> do form: {{model | json}}</pre>
+      </cp-form>
+    </div>
+</div>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js'></script>
+
+    <script src="js/index.js"></script>
+
+</body>
+</html>
